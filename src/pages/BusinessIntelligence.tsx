@@ -1,4 +1,39 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
+
+function Sparkline({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 24"
+      preserveAspectRatio="none"
+      className={`h-6 w-full ${className}`}
+    >
+      <defs>
+        <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#635BFF" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#635BFF" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M0 20 L12 18 L24 19 L36 14 L48 16 L60 10 L72 12 L84 6 L100 4 L100 24 L0 24 Z"
+        fill="url(#spark-fill)"
+      />
+      <path
+        d="M0 20 L12 18 L24 19 L36 14 L48 16 L60 10 L72 12 L84 6 L100 4"
+        fill="none"
+        stroke="#635BFF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+const FRAME_COUNT = 121;
+const framePath = (i: number) =>
+  `/frames-hero/frame_${String(i).padStart(4, '0')}.jpg`;
 import {
   ArrowRight,
   CheckCircle2,
@@ -131,6 +166,229 @@ const trustPoints = [
   },
 ];
 
+function ModuleShowcase() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const framesRef = useRef<HTMLImageElement[]>([]);
+  const currentFrameRef = useRef(-1);
+  const rafRef = useRef<number | null>(null);
+  const [cardsVisible, setCardsVisible] = useState(false);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Preload all frames once
+  useEffect(() => {
+    const imgs: HTMLImageElement[] = [];
+    for (let i = 1; i <= FRAME_COUNT; i++) {
+      const img = new Image();
+      img.src = framePath(i);
+      imgs.push(img);
+    }
+    framesRef.current = imgs;
+
+    // Wait for first frame, draw it
+    imgs[0].onload = () => drawFrame(0);
+  }, []);
+
+  const drawFrame = (idx: number) => {
+    const canvas = canvasRef.current;
+    const img = framesRef.current[idx];
+    if (!canvas || !img || !img.complete || img.naturalWidth === 0) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = canvas.clientWidth;
+    const cssH = canvas.clientHeight;
+    if (canvas.width !== cssW * dpr || canvas.height !== cssH * dpr) {
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+    }
+
+    // cover-fit
+    const scale = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+    const drawW = img.naturalWidth * scale;
+    const drawH = img.naturalHeight * scale;
+    const dx = (canvas.width - drawW) / 2;
+    const dy = (canvas.height - drawH) / 2;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, dx, dy, drawW, drawH);
+    currentFrameRef.current = idx;
+  };
+
+  useMotionValueEvent(scrollYProgress, 'change', (p) => {
+    // Map first 82% of scroll progress to full frame range, rest is card reveal
+    const scrubProgress = Math.min(1, p / 0.82);
+    const target = Math.min(
+      FRAME_COUNT - 1,
+      Math.max(0, Math.round(scrubProgress * (FRAME_COUNT - 1)))
+    );
+    if (target !== currentFrameRef.current) {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => drawFrame(target));
+    }
+    if (p > 0.82 && !cardsVisible) setCardsVisible(true);
+    if (p < 0.78 && cardsVisible) setCardsVisible(false);
+  });
+
+  // Redraw on resize so canvas stays crisp
+  useEffect(() => {
+    const onResize = () => {
+      if (currentFrameRef.current >= 0) drawFrame(currentFrameRef.current);
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const canvasOpacity = useTransform(scrollYProgress, [0.78, 0.9], [1, 0]);
+
+  const cardsContainer = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+  };
+  const cardItem = {
+    hidden: { opacity: 0, y: 20, scale: 0.94 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative bg-white"
+      style={{ height: '280vh' }}
+    >
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+        <div className="container-content w-full">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16 xl:gap-24">
+            {/* Left: headline */}
+            <div>
+              <span className="eyebrow">
+                <BarChart3 className="h-3.5 w-3.5" />
+                What's inside
+              </span>
+              <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl xl:text-6xl 2xl:text-7xl">
+                Four views. Everything covered.
+              </h2>
+              <p className="mt-5 text-base leading-relaxed text-muted md:text-lg xl:text-xl">
+                Each module pulls from a dedicated integration and stays in sync
+                automatically. Scroll to see them assemble.
+              </p>
+            </div>
+
+            {/* Right: video → cards */}
+            <div className="relative mx-auto aspect-square w-full max-w-[640px] xl:max-w-[760px] 2xl:max-w-[860px]">
+              <motion.canvas
+                ref={canvasRef}
+                className="absolute inset-0 h-full w-full"
+                style={{
+                  opacity: canvasOpacity,
+                  WebkitMaskImage:
+                    'radial-gradient(ellipse at center, black 55%, transparent 92%)',
+                  maskImage:
+                    'radial-gradient(ellipse at center, black 55%, transparent 92%)',
+                }}
+              />
+              <motion.div
+                variants={cardsContainer}
+                initial="hidden"
+                animate={cardsVisible ? 'visible' : 'hidden'}
+                className="absolute inset-0 grid grid-cols-2 gap-3 xl:gap-4"
+              >
+                {modules.map((mod) => (
+                  <motion.div
+                    key={mod.eyebrow}
+                    variants={cardItem}
+                    className="relative flex flex-col rounded-2xl border border-line bg-surface p-4 shadow-card xl:p-5"
+                  >
+                    {mod.comingSoon && (
+                      <span className="absolute right-3 top-3 rounded-full bg-amber-100 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-amber-700">
+                        Soon
+                      </span>
+                    )}
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white text-brand shadow-sm">
+                      <mod.icon className="h-4 w-4" />
+                    </span>
+                    <p className="mt-3 font-mono text-[10px] uppercase tracking-widest text-brand">
+                      {mod.eyebrow}
+                    </p>
+                    <h3 className="mt-1 font-heading text-sm font-bold leading-tight tracking-tight text-ink xl:text-base">
+                      {mod.title}
+                    </h3>
+
+                    {mod.stats && (
+                      <>
+                        <div className="mt-3 grid grid-cols-3 gap-1.5">
+                          {mod.stats.map((s) => (
+                            <div
+                              key={s.label}
+                              className="min-w-0 rounded-lg border border-line bg-white px-2 py-1.5"
+                            >
+                              <p className="truncate font-mono text-[8px] uppercase tracking-widest text-muted">
+                                {s.label}
+                              </p>
+                              <p className="mt-0.5 truncate font-heading text-[11px] font-bold text-ink xl:text-xs">
+                                {s.value}
+                              </p>
+                              <p
+                                className={`mt-0.5 text-[9px] font-medium ${
+                                  s.up ? 'text-emerald-600' : 'text-red-500'
+                                }`}
+                              >
+                                {s.delta}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                        <Sparkline className="mt-3" />
+                      </>
+                    )}
+
+                    {mod.bullets && (
+                      <ul className="mt-3 space-y-1.5">
+                        {mod.bullets.map((b) => (
+                          <li
+                            key={b}
+                            className="flex items-start gap-1.5 text-[11px] leading-snug text-muted xl:text-xs"
+                          >
+                            <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
+                            <span className="line-clamp-2">{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {mod.comingSoon && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {['Google Ads', 'Meta Ads', 'ROAS', 'CPR'].map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-line bg-white px-2 py-0.5 font-mono text-[9px] text-muted"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function BusinessIntelligence() {
   return (
     <>
@@ -167,85 +425,21 @@ export default function BusinessIntelligence() {
               <div className="pointer-events-none absolute -left-10 top-10 h-48 w-48 rounded-full bg-cream/80 blur-3xl xl:h-72 xl:w-72" />
               <div className="pointer-events-none absolute -right-10 bottom-10 h-56 w-56 rounded-full bg-sky/80 blur-3xl xl:h-80 xl:w-80" />
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(99,91,255,0.08),_transparent_60%)]" />
-              <img
-                src="/dashboardpage.png"
-                alt="Ealize Business Intelligence dashboard"
-                className="relative z-10 w-full max-w-[480px] rounded-2xl drop-shadow-[0_30px_60px_rgba(15,15,15,0.18)] md:max-w-full xl:rounded-3xl"
+              <video
+                src="/Animationseedance.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full max-w-[480px] rounded-2xl drop-shadow-[0_30px_60px_rgba(15,15,15,0.18)] md:max-w-full xl:rounded-3xl xl:scale-110 2xl:scale-125"
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Module showcase */}
-      <section className="bg-white py-20 md:py-28 xl:py-36 2xl:py-44">
-        <div className="container-content">
-          <div className="mx-auto max-w-2xl text-center xl:max-w-3xl">
-            <span className="eyebrow">
-              <BarChart3 className="h-3.5 w-3.5" />
-              What's inside
-            </span>
-            <h2 className="mt-5 font-heading text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl xl:text-6xl">
-              Four views. Everything covered.
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-muted md:text-lg xl:text-xl">
-              Each module pulls from a dedicated integration and stays in sync automatically.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 md:mt-16 xl:grid-cols-4 xl:gap-6 2xl:gap-8">
-            {modules.map((mod) => (
-              <div
-                key={mod.eyebrow}
-                className="relative rounded-2xl border border-line bg-surface p-6 xl:p-8 2xl:p-10"
-              >
-                {mod.comingSoon && (
-                  <span className="absolute top-5 right-5 rounded-full bg-amber-100 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-amber-700">
-                    Coming soon
-                  </span>
-                )}
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-brand shadow-sm xl:h-12 xl:w-12">
-                  <mod.icon className="h-5 w-5 xl:h-6 xl:w-6" />
-                </span>
-                <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-brand">
-                  {mod.eyebrow}
-                </p>
-                <h3 className="mt-1 font-heading text-lg font-bold tracking-tight text-ink xl:text-xl">
-                  {mod.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted xl:text-base">{mod.body}</p>
-
-                {mod.stats && (
-                  <div className="mt-5 grid grid-cols-3 gap-2 xl:gap-3">
-                    {mod.stats.map((s) => (
-                      <div key={s.label} className="min-w-0 rounded-xl border border-line bg-white p-2.5 xl:p-3">
-                        <p className="truncate font-mono text-[9px] uppercase tracking-widest text-muted xl:text-[10px]">
-                          {s.label}
-                        </p>
-                        <p className="mt-1 truncate font-heading text-sm font-bold text-ink xl:text-base">{s.value}</p>
-                        <p className={`mt-0.5 text-xs font-medium ${s.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                          {s.delta}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {mod.bullets && (
-                  <ul className="mt-5 space-y-2">
-                    {mod.bullets.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-sm text-muted xl:text-base">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Module showcase — scroll-scrubbed video, then cards pop in */}
+      <ModuleShowcase />
 
       {/* Integrations */}
       <section id="integrations" className="bg-surface py-20 md:py-28 xl:py-36 2xl:py-44">
