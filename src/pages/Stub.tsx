@@ -9,7 +9,7 @@ export default function Stub({ title }: { title: string }) {
       </h1>
       <p className="mx-auto mt-5 max-w-xl text-base text-muted md:text-lg">
         This page is under construction. The homepage shows the new Ealize
-        direction — full product pages land next.
+        direction, full product pages land next.
       </p>
       <Link to="/" className="btn-primary mt-9">
         Back to homepage

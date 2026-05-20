@@ -16,7 +16,7 @@ export default function FounderTeaser() {
               We started Ealize because we noticed something: every business is
               told they need AI, but the tools are either too expensive,
               over-engineered, or built for someone else. We&apos;re building
-              the version we&apos;d want — clean, fast, and priced for the real
+              the version we&apos;d want, clean, fast, and priced for the real
               world.
             </p>
             <Link

@@ -16,7 +16,7 @@ const pillars: {
     eyebrow: 'Revenue clarity',
     title: 'Messy revenue flows (fixed)',
     body:
-      'Stripe, invoicing, refunds, subscriptions — all stitched into one clean view. No more reconciling spreadsheets at the end of the month or guessing where the gap came from. See exactly what came in, what churned, and what is recurring next.',
+      'Stripe, invoicing, refunds, subscriptions, all stitched into one clean view. No more reconciling spreadsheets at the end of the month or guessing where the gap came from. See exactly what came in, what churned, and what is recurring next.',
   },
   {
     key: 'forecast',
@@ -24,7 +24,7 @@ const pillars: {
     eyebrow: 'Forward visibility',
     title: 'Run your business with a clear vision of the future',
     body:
-      'Forecasts that actually use your data — not generic templates. Ealize projects cash flow, customer growth, and pipeline outcomes weeks ahead, so the decision you make today is already informed by the consequences you would have seen next month.',
+      'Forecasts that actually use your data, not generic templates. Ealize projects cash flow, customer growth, and pipeline outcomes weeks ahead, so the decision you make today is already informed by the consequences you would have seen next month.',
   },
   {
     key: 'market',

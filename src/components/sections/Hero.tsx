@@ -63,7 +63,7 @@ export default function Hero() {
 
             <img
               src="/herolanding.png"
-              alt="Ealize AI products — business intelligence dashboard and automation"
+              alt="Ealize AI products, business intelligence dashboard and automation"
               className="relative z-10 w-full max-w-[420px] rounded-3xl drop-shadow-[0_30px_60px_rgba(15,15,15,0.18)] xl:max-w-[500px] 2xl:max-w-[580px]"
             />
           </div>

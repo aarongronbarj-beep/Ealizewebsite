@@ -56,7 +56,7 @@ const integrations = [
     color: '#EA4335',
     textOnColor: 'white' as const,
     status: 'Live',
-    pulls: 'Inbox triage, AI-extracted deadlines, action items, and vendor mentions — synced automatically.',
+    pulls: 'Inbox triage, AI-extracted deadlines, action items, and vendor mentions, synced automatically.',
   },
   {
     name: 'Stripe',
@@ -64,7 +64,7 @@ const integrations = [
     color: '#635BFF',
     textOnColor: 'white' as const,
     status: 'Live',
-    pulls: 'Payments, subscriptions, refunds and disputes — synced in real time.',
+    pulls: 'Payments, subscriptions, refunds and disputes, synced in real time.',
   },
   {
     name: 'HubSpot',
@@ -72,7 +72,7 @@ const integrations = [
     color: '#FF7A59',
     textOnColor: 'white' as const,
     status: 'Live',
-    pulls: 'Contacts, open deals, pipeline stages, and customer segments — always current.',
+    pulls: 'Contacts, open deals, pipeline stages, and customer segments, always current.',
   },
   {
     name: 'QuickBooks',
@@ -88,7 +88,7 @@ const integrations = [
     color: '#4285F4',
     textOnColor: 'white' as const,
     status: 'Soon',
-    pulls: 'Ad spend, conversions, ROAS, and keyword performance — all in one place.',
+    pulls: 'Ad spend, conversions, ROAS, and keyword performance, all in one place.',
   },
   {
     name: 'Meta Ads',
@@ -105,7 +105,7 @@ const modules = [
     icon: TrendingUp,
     eyebrow: 'Revenue',
     title: 'Know your real numbers.',
-    body: 'MRR, ARR, and churn rate tracked live from Stripe. Revenue broken down by product, customer segment, and stream — with sparklines on every metric so you see the trend at a glance.',
+    body: 'MRR, ARR, and churn rate tracked live from Stripe. Revenue broken down by product, customer segment, and stream, with sparklines on every metric so you see the trend at a glance.',
     stats: [
       { label: 'MRR', value: '$28,077', delta: '+3.2%', up: true },
       { label: 'ARR', value: '$336,924', delta: '+15.4%', up: true },
@@ -116,7 +116,7 @@ const modules = [
     icon: Users,
     eyebrow: 'Customers',
     title: 'Your full pipeline, one screen.',
-    body: 'HubSpot contacts and deals pulled into a live kanban — Lead, Qualified, Proposal, Negotiation, Closed Won. See total pipeline value, days in stage, and which accounts are at risk.',
+    body: 'HubSpot contacts and deals pulled into a live kanban, Lead, Qualified, Proposal, Negotiation, Closed Won. See total pipeline value, days in stage, and which accounts are at risk.',
     stats: [
       { label: 'Contacts', value: '614', delta: '+7.4%', up: true },
       { label: 'Open Deals', value: '35', delta: '+12.9%', up: true },
@@ -127,10 +127,10 @@ const modules = [
     icon: Mail,
     eyebrow: 'AI Inbox',
     title: 'Your inbox, already triaged.',
-    body: 'Gmail syncs every few minutes. Ealize reads each message and extracts deadlines, action items, and vendor mentions — so your most important emails are never buried.',
+    body: 'Gmail syncs every few minutes. Ealize reads each message and extracts deadlines, action items, and vendor mentions, so your most important emails are never buried.',
     bullets: [
       'Deadlines pulled from email bodies, with one-click calendar add',
-      'Action items surfaced as checkboxes — mark done without leaving Ealize',
+      'Action items surfaced as checkboxes, mark done without leaving Ealize',
       'Categories: Finance, Legal, Urgent, Deadlines, Customer',
     ],
   },
@@ -138,7 +138,7 @@ const modules = [
     icon: Megaphone,
     eyebrow: 'Marketing',
     title: 'Ad spend meets revenue.',
-    body: 'Google Ads and Meta Ads land soon. When they do, you will see spend, conversions, ROAS, and cost-per-result alongside your Stripe revenue — so attribution is never a guess.',
+    body: 'Google Ads and Meta Ads land soon. When they do, you will see spend, conversions, ROAS, and cost-per-result alongside your Stripe revenue, so attribution is never a guess.',
     comingSoon: true,
   },
 ];
@@ -406,7 +406,7 @@ export default function BusinessIntelligence() {
                 </span>
               </h1>
               <p className="mt-6 text-base leading-relaxed text-muted sm:mt-8 md:text-lg xl:text-xl xl:leading-relaxed 2xl:text-2xl">
-                Revenue, customers, inbox, and marketing — one dashboard, always in sync.
+                Revenue, customers, inbox, and marketing, one dashboard, always in sync.
                 Connect Gmail, Stripe, and HubSpot in minutes and stop switching tabs to understand your business.
               </p>
 
@@ -438,7 +438,7 @@ export default function BusinessIntelligence() {
         </div>
       </section>
 
-      {/* Module showcase — scroll-scrubbed video, then cards pop in */}
+      {/* Module showcase, scroll-scrubbed video, then cards pop in */}
       <ModuleShowcase />
 
       {/* Integrations */}
@@ -455,7 +455,7 @@ export default function BusinessIntelligence() {
                 All your tools, one view.
               </h2>
               <p className="mt-4 text-base leading-relaxed text-muted md:text-lg xl:text-xl">
-                Plug in once. Ealize handles the rest — pulling, normalizing and
+                Plug in once. Ealize handles the rest, pulling, normalizing and
                 reconciling your data every few minutes.
               </p>
 

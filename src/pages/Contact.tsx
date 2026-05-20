@@ -11,7 +11,7 @@ export default function Contact() {
           Let&apos;s talk about your business.
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted md:text-lg">
-          Write to us directly — whether it&apos;s a question, a project, or
+          Write to us directly, whether it&apos;s a question, a project, or
           you just want to book a call. We&apos;re humans on the other side
           and reply within 24 hours.
         </p>
@@ -25,7 +25,7 @@ export default function Contact() {
 
         <p className="mt-6 text-xs text-muted">
           For a call, include a few times that work for you and your timezone
-          — we&apos;ll confirm with a calendar invite.
+         , we&apos;ll confirm with a calendar invite.
         </p>
       </div>
     </section>

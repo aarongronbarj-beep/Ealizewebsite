@@ -25,7 +25,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
-              AI optimization for businesses that want to grow — built by a new
+              AI optimization for businesses that want to grow, built by a new
               generation of founders.
             </p>
           </div>

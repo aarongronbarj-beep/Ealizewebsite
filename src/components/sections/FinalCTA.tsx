@@ -15,7 +15,7 @@ export default function FinalCTA() {
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
               Whether you need a website, an AI tool, or a complete digital
-              overhaul — book a quick call and let&apos;s talk.
+              overhaul, book a quick call and let&apos;s talk.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <Link
